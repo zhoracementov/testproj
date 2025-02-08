@@ -1,8 +1,8 @@
 package com.example.testproject.service;
 
-import com.example.testproject.repository.DocumentMeta;
-import com.example.testproject.repository.DocumentMetaRepository;
-import com.example.testproject.repository.DocumentMetaUpdateRequest;
+import com.example.testproject.repository.Document;
+import com.example.testproject.repository.DocumentRepository;
+import com.example.testproject.repository.DocumentUpdateRequest;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -24,27 +24,27 @@ import java.util.List;
 import java.util.Objects;
 
 @Service
-public class DocumentMetaService {
+public class DocumentService {
 
     @Value("${file.upload-dir}")
     private String uploadDir;
 
-    private final DocumentMetaRepository documentMetaRepository;
+    private final DocumentRepository documentRepository;
 
-    public DocumentMetaService(DocumentMetaRepository documentMetaRepository) {
-        this.documentMetaRepository = documentMetaRepository;
+    public DocumentService(DocumentRepository documentRepository) {
+        this.documentRepository = documentRepository;
     }
 
-    public DocumentMeta UploadDocument(MultipartFile file, String description) throws IOException {
+    public Document UploadDocument(MultipartFile file, String description) throws IOException {
         String fileName = new String(Objects.requireNonNull(file.getOriginalFilename()).getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
 
-        DocumentMeta document = new DocumentMeta();
+        Document document = new Document();
         document.setFileName(fileName);
         document.setFileSize((long)Math.ceil(file.getSize() / (1024.0 * 1024.0)));
         document.setDescription(description);
         document.setUploadedAt(LocalDateTime.now());
 
-        DocumentMeta res = documentMetaRepository.save(document);
+        Document res = documentRepository.save(document);
 
         //uploads/
         //├── 1/                # Папка для документа с id = 1
@@ -63,16 +63,16 @@ public class DocumentMetaService {
         return res;
     }
 
-    public List<DocumentMeta> GetAllDocuments() {
-        return documentMetaRepository.findAll();
+    public List<Document> GetAllDocuments() {
+        return documentRepository.findAll();
     }
 
-    public DocumentMeta GetDocumentById(Long id) {
-        return documentMetaRepository.findById(id).orElseThrow(() -> new RuntimeException("Document not found"));
+    public Document GetDocumentById(Long id) {
+        return documentRepository.findById(id).orElseThrow(() -> new RuntimeException("Document not found"));
     }
 
     public Resource DownloadDocument(Long id) throws FileNotFoundException, MalformedURLException {
-        DocumentMeta document = documentMetaRepository.findById(id)
+        Document document = documentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Document not found"));
 
         Path filePath = Paths.get(uploadDir, document.getId().toString(), document.getFileName());
@@ -86,8 +86,8 @@ public class DocumentMetaService {
     }
 
     @Transactional
-    public DocumentMeta UpdateDocument(Long id, DocumentMetaUpdateRequest updateRequest) throws IOException {
-        DocumentMeta document = documentMetaRepository.findById(id)
+    public Document UpdateDocument(Long id, DocumentUpdateRequest updateRequest) throws IOException {
+        Document document = documentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Document not found"));
 
         if (updateRequest.getFileName() != null && !updateRequest.getFileName().equals(document.getFileName()))
@@ -102,11 +102,11 @@ public class DocumentMetaService {
             document.setDescription(updateRequest.getDescription());
         }
 
-        return documentMetaRepository.save(document);
+        return documentRepository.save(document);
     }
 
     public void DeleteDocument(Long id) throws IOException {
-        DocumentMeta document = documentMetaRepository.findById(id)
+        Document document = documentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Document not found"));
 
         Path folderPath = Paths.get(uploadDir, document.getId().toString());
@@ -122,6 +122,6 @@ public class DocumentMetaService {
                     });
         }
 
-        documentMetaRepository.deleteById(id);
+        documentRepository.deleteById(id);
     }
 }

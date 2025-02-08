@@ -2,12 +2,12 @@ package com.example.testproject.repository;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
-import java.time.LocalDate;
+
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "documentmeta")
-public class DocumentMeta {
+@Table(name = "document")
+public class Document {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -21,7 +21,7 @@ public class DocumentMeta {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime uploadedAt;
 
-    public DocumentMeta(Long id, String fileName, Long fileSize, String description, LocalDateTime uploadedAt) {
+    public Document(Long id, String fileName, Long fileSize, String description, LocalDateTime uploadedAt) {
         this.id = id;
         this.fileName = fileName;
         this.fileSize = fileSize;
@@ -29,7 +29,7 @@ public class DocumentMeta {
         this.uploadedAt = uploadedAt;
     }
 
-    public DocumentMeta() {
+    public Document() {
     }
 
     public Long getId() {
