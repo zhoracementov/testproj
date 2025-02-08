@@ -1,13 +1,21 @@
 package com.example.testproject.repository;
 
+import jakarta.persistence.*;
 import java.time.LocalDate;
 
+@Entity
+@Table(name = "documentmeta")
 public class DocumentMeta {
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(name = "filename")
     private String fileName;
+    @Column(name = "filesize")
     private Long fileSize; //mb
+    @Column(name = "description")
     private String description;
+    @Column(name = "uploadedat")
     private LocalDate uploadedAt;
 
     public DocumentMeta(Long id, String fileName, Long fileSize, String description, LocalDate uploadedAt) {
