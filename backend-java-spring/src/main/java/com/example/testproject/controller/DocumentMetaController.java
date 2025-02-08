@@ -53,7 +53,7 @@ public class DocumentMetaController {
         Resource resource = documentMetaService.DownloadDocument(id);
 
         Path fileName = Paths.get(documentMetaService.GetDocumentById(id).getFileName());
-        
+
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
                 .header(HttpHeaders.CONTENT_TYPE, Files.probeContentType(fileName))

@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -35,8 +36,10 @@ public class DocumentMetaService {
     }
 
     public DocumentMeta UploadDocument(MultipartFile file, String description) throws IOException {
+        String fileName = new String(Objects.requireNonNull(file.getOriginalFilename()).getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
+
         DocumentMeta document = new DocumentMeta();
-        document.setFileName(file.getOriginalFilename());
+        document.setFileName(fileName);
         document.setFileSize((long)Math.ceil(file.getSize() / (1024.0 * 1024.0)));
         document.setDescription(description);
         document.setUploadedAt(LocalDateTime.now());
