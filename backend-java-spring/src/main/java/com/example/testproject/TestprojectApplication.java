@@ -12,9 +12,4 @@ public class TestprojectApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(TestprojectApplication.class, args);
 	}
-
-	@GetMapping
-	public String TestHelloWorld() {
-		return  "Hello world";
-	}
 }
