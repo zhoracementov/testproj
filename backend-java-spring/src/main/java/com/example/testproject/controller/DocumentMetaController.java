@@ -1,4 +1,4 @@
-package com.example.testproject.contoller;
+package com.example.testproject.controller;
 
 import com.example.testproject.repository.DocumentMeta;
 import com.example.testproject.repository.DocumentMetaUpdateRequest;
@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 @RestController
@@ -49,8 +52,11 @@ public class DocumentMetaController {
     public ResponseEntity<Resource> DownloadDocument(@PathVariable Long id) throws IOException {
         Resource resource = documentMetaService.DownloadDocument(id);
 
+        Path fileName = Paths.get(documentMetaService.GetDocumentById(id).getFileName());
+        
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
+                .header(HttpHeaders.CONTENT_TYPE, Files.probeContentType(fileName))
                 .body(resource);
     }
 
