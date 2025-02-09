@@ -1,29 +1,46 @@
 <template>
   <div>
     <h2>Список документов</h2>
-    <ul>
-      <li v-for="document in documents" :key="document.id">
-        <strong>{{ document.fileName }}</strong> - {{ document.description }}
-        <button @click="downloadDocument(document.id)">Скачать</button>
-        <button @click="deleteDocument(document.id)">Удалить</button>
-      </li>
-    </ul>
+    <table>
+      <thead>
+        <tr>
+          <th>Имя файла</th>
+          <th>Описание</th>
+          <th>Размер файла (МБ)</th>
+          <th>Дата загрузки</th>
+          <th>Действия</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="document in documents" :key="document.id">
+          <td>{{ document.fileName }}</td>
+          <td>{{ document.description }}</td>
+          <td>{{ document.fileSize.toFixed(2) }}</td>
+          <td>{{ formatDate(document.uploadedAt) }}</td>
+          <td>
+            <button @click="downloadDocument(document.id)">Скачать</button>
+            <button @click="deleteDocument(document.id)">Удалить</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </template>
 
-  <script>
-  import api from '@/services/api';
-  
-  export default {
-    data() {
+<script>
+import api from '@/services/api'; // Импортируем api.js
+
+export default {
+  data() {
     return {
-      documents: [],
+      documents: [], // Список документов
     };
   },
   async created() {
-    await this.fetchDocuments();
+    await this.fetchDocuments(); // Загружаем документы при создании компонента
   },
   methods: {
+    // Метод для получения списка документов
     async fetchDocuments() {
       try {
         const response = await api.getDocuments();
@@ -33,6 +50,8 @@
         alert('Ошибка при загрузке документов: ' + error.message);
       }
     },
+
+    // Метод для скачивания документа
     async downloadDocument(id) {
       try {
         const response = await api.downloadDocument(id);
@@ -48,38 +67,52 @@
         alert('Ошибка при скачивании документа: ' + error.message);
       }
     },
+
+    // Метод для удаления документа
     async deleteDocument(id) {
       try {
         await api.deleteDocument(id);
         alert('Документ успешно удален!');
-        await this.fetchDocuments();
+        await this.fetchDocuments(); // Обновляем список документов после удаления
       } catch (error) {
         console.error('Ошибка при удалении документа:', error);
         alert('Ошибка при удалении документа: ' + error.message);
       }
     },
+
+    // Метод для форматирования даты
+    formatDate(dateString) {
+      const date = new Date(dateString);
+      return date.toLocaleString(); // Форматируем дату и время
+    },
   },
-  };
-  </script>
+};
+</script>
 
 <style scoped>
-ul {
-  list-style-type: none;
-  padding: 0;
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
 }
 
-li {
-  margin: 10px 0;
+th, td {
   padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+th {
+  background-color: #f4f4f4;
+  font-weight: bold;
+}
+
+tr:hover {
+  background-color: #f9f9f9;
 }
 
 button {
-  margin-left: 10px;
+  margin-left: 5px;
   padding: 5px 10px;
   background-color: #42b983;
   color: white;
