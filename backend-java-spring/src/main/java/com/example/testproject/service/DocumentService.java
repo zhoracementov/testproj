@@ -40,7 +40,7 @@ public class DocumentService {
 
         Document document = new Document();
         document.setFileName(fileName);
-        document.setFileSize((long)Math.ceil(file.getSize() / (1024.0 * 1024.0)));
+        document.setFileSize(file.getSize() / (1024.0d * 1024.0d));
         document.setDescription(description);
         document.setUploadedAt(LocalDateTime.now());
 

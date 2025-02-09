@@ -14,14 +14,14 @@ public class Document {
     @Column(name = "filename", nullable = false)
     private String fileName;
     @Column(name = "filesize", nullable = false)
-    private Long fileSize; //mb
+    private Double fileSize; //mb
     @Column(name = "description")
     private String description;
     @Column(name = "uploadedat", nullable = false)
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime uploadedAt;
 
-    public Document(Long id, String fileName, Long fileSize, String description, LocalDateTime uploadedAt) {
+    public Document(Long id, String fileName, Double fileSize, String description, LocalDateTime uploadedAt) {
         this.id = id;
         this.fileName = fileName;
         this.fileSize = fileSize;
@@ -48,11 +48,11 @@ public class Document {
         this.fileName = fileName;
     }
 
-    public Long getFileSize() {
+    public Double getFileSize() {
         return fileSize;
     }
 
-    public void setFileSize(Long fileSize) {
+    public void setFileSize(Double fileSize) {
         this.fileSize = fileSize;
     }
 
