@@ -4,7 +4,7 @@ import DocumentDetail from '@/components/documentDetailComponent.vue';
 
 const routes = [
   { path: '/', name: 'DocumentList', component: DocumentList },
-  { path: '/documents/:id', name: 'DocumentDetail', component: DocumentDetail },  // Параметр id
+  { path: '/documents/:id', name: 'DocumentDetail', component: DocumentDetail },
 ];
 
 const router = createRouter({

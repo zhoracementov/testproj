@@ -1,32 +1,32 @@
 <template>
   <div class="document-detail-container">
-    <h2>Документ: {{ originalFileName }}</h2>
+    <h2>Document: {{ originalFileName }}</h2>
 
     <div class="field">
-      <label for="fileName">Название файла:</label>
+      <label for="fileName">file name:</label>
       <input
         id="fileName"
         v-model="document.fileName"
         type="text"
         class="input-field"
-        placeholder="Введите новое название файла"
+        placeholder="Enter a new file name"
       />
     </div>
 
     <div class="field">
-      <label for="description">Описание документа:</label>
+      <label for="description">description:</label>
       <textarea
         id="description"
         v-model="document.description"
         class="textarea-field"
         rows="4"
-        placeholder="Введите новое описание документа"
+        placeholder="Enter a new description"
       ></textarea>
     </div>
 
     <div class="actions">
-      <button class="primary-button" @click="updateDocument">Обновить документ</button>
-      <button class="secondary-button" @click="downloadDocument">Скачать документ</button>
+      <button class="primary-button" @click="updateDocument">Update</button>
+      <button class="secondary-button" @click="downloadDocument">Save</button>
     </div>
   </div>
 </template>
@@ -80,7 +80,7 @@ export default {
       }
     },
     validateFileName(fileName) {
-      const validPattern = /^[\p{L}\d._-]+$/u;
+      const validPattern = /^[\p{L}\d\s._-]+$/u;
       if (!validPattern.test(fileName)) {
         alert(
           "Имя файла содержит недопустимые символы. Разрешены буквы, цифры, точки, подчеркивания и дефисы."
