@@ -44,7 +44,7 @@ public class DocumentService {
             throw new IllegalArgumentException("Неподдерживаемый тип файла: " + fileType);
         }
 
-        String fileName = new String(Objects.requireNonNull(file.getOriginalFilename()).getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
+        String fileName = file.getOriginalFilename();
 
         Document document = new Document();
         document.setFileName(fileName);
