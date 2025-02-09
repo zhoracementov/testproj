@@ -24,6 +24,8 @@
         try {
           const response = await api.uploadDocument(this.file, this.description);
           console.log('Файл загружен:', response.data);
+          alert('Файл успешно загружен!');
+          this.$emit('file-uploaded');
         } catch (error) {
           console.error('Ошибка при загрузке файла:', error);
         }

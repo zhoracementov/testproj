@@ -1,16 +1,24 @@
 <template>
   <div id="app">
-    <FileUpload />
+    <FileUpload @file-uploaded="fetchDocuments" /> 
+    <DocumentList ref="documentList" />
   </div>
 </template>
 
 <script>
 import FileUpload from '@/components/uploadFileComponent.vue';
+import DocumentList from './components/getDocumentsComponent.vue';
 
 export default {
   name: 'App',
   components: {
     FileUpload,
+    DocumentList,
+  }, 
+  methods: {
+    fetchDocuments() {
+      this.$refs.documentList.fetchDocuments();
+    },
   },
 };
 </script>
