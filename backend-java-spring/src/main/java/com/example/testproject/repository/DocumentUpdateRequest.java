@@ -4,6 +4,12 @@ public class DocumentUpdateRequest {
     private String fileName;
     private String description;
 
+    public DocumentUpdateRequest(String fileName, String description) {
+        this.fileName = fileName;
+        this.description = description;
+    }
+
+
     public String getFileName() {
         return fileName;
     }

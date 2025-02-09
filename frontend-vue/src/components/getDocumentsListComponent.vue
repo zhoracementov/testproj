@@ -18,6 +18,9 @@
           <td>{{ document.fileSize.toFixed(2) }}</td>
           <td>{{ formatDate(document.uploadedAt) }}</td>
           <td>
+            <router-link :to="'/documents/' + document.id">
+              <button>Просмотр / Редактировать</button>
+            </router-link>
             <button @click="downloadDocument(document.id)">Скачать</button>
             <button @click="deleteDocument(document.id)">Удалить</button>
           </td>

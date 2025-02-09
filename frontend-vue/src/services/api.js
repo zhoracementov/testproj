@@ -29,7 +29,11 @@ export default {
     },
 
     updateDocument(id, data) {
-        return apiClient.put(`/documents/${id}`, data);
+        return apiClient.put(`/documents/${id}`, data, {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
     },
 
     deleteDocument(id) {

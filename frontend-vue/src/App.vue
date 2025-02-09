@@ -1,25 +1,15 @@
 <template>
   <div id="app">
-    <FileUpload @file-uploaded="fetchDocuments" /> 
-    <DocumentList ref="documentList" />
+    <nav>
+      <router-link to="/">Назад</router-link>
+    </nav>
+    <router-view />
   </div>
 </template>
 
 <script>
-import FileUpload from '@/components/uploadFileComponent.vue';
-import DocumentList from './components/getDocumentsComponent.vue';
-
 export default {
   name: 'App',
-  components: {
-    FileUpload,
-    DocumentList,
-  }, 
-  methods: {
-    fetchDocuments() {
-      this.$refs.documentList.fetchDocuments();
-    },
-  },
 };
 </script>
 
@@ -28,5 +18,16 @@ export default {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   text-align: center;
   margin-top: 60px;
+}
+nav {
+  margin-bottom: 20px;
+}
+nav a {
+  margin: 0 10px;
+  text-decoration: none;
+  color: blue;
+}
+nav a:hover {
+  text-decoration: underline;
 }
 </style>

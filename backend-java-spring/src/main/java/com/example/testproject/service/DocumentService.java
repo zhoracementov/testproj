@@ -13,7 +13,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -94,7 +93,7 @@ public class DocumentService {
         if (updateRequest.getFileName() != null && !updateRequest.getFileName().equals(document.getFileName()))
         {
             Path currentFilePath = Paths.get(uploadDir, document.getId().toString(), document.getFileName());
-            Path newFilePath = currentFilePath.resolveSibling(updateRequest.getFileName());
+            Path newFilePath = Paths.get(uploadDir, document.getId().toString(), updateRequest.getFileName());
             Files.move(currentFilePath, newFilePath, StandardCopyOption.REPLACE_EXISTING);
             document.setFileName(updateRequest.getFileName());
         }
