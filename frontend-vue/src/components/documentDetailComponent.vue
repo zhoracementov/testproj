@@ -1,9 +1,9 @@
 <template>
   <div class="document-detail-container">
-    <h2>Document: {{ originalFileName }}</h2>
+    <h2>{{ originalFileName }}</h2>
 
     <div class="field">
-      <label for="fileName">file name:</label>
+      <label for="fileName">Edit file name:</label>
       <input
         id="fileName"
         v-model="document.fileName"
@@ -14,7 +14,7 @@
     </div>
 
     <div class="field">
-      <label for="description">description:</label>
+      <label for="description">Edit description:</label>
       <textarea
         id="description"
         v-model="document.description"
@@ -26,7 +26,13 @@
 
     <div class="actions">
       <button class="primary-button" @click="updateDocument">Update</button>
-      <button class="secondary-button" @click="downloadDocument">Save</button>
+      <button class="secondary-button" @click="resetChanges">Reset</button>
+      <button class="back-button" @click="goBack">Back</button>
+    </div>
+
+    <div class="action-icons">
+      <i class="fas fa-download download-icon" @click="downloadDocument"></i>
+      <i class="fas fa-trash delete-icon" @click="deleteDocument"></i>
     </div>
   </div>
 </template>
@@ -39,6 +45,7 @@ export default {
     return {
       document: null,
       originalFileName: "",
+      originalDescription: "",
     };
   },
   async created() {
@@ -47,13 +54,25 @@ export default {
       const response = await api.getDocumentById(id);
       this.document = response.data;
       this.originalFileName = this.document.fileName;
+      this.originalDescription = this.document.description;
     } catch (error) {
       console.error("Ошибка загрузки документа:", error);
     }
   },
   methods: {
     async updateDocument() {
+      // Проверка на изменения
+      if (
+        this.document.fileName === this.originalFileName &&
+        this.document.description === this.originalDescription
+      ) {
+        alert("Нет изменений для обновления.");
+        return; // Если изменений нет, операция не выполняется
+      }
+
+      // Валидация имени файла
       if (!this.validateFileName(this.document.fileName)) return;
+
       try {
         const payload = {
           fileName: this.document.fileName,
@@ -62,8 +81,23 @@ export default {
         await api.updateDocument(this.document.id, payload);
         alert("Документ успешно обновлен!");
         this.originalFileName = this.document.fileName;
+        this.originalDescription = this.document.description;
       } catch (error) {
         console.error("Ошибка обновления документа:", error);
+      }
+    },
+    async deleteDocument() {
+      const confirmDelete = confirm("Вы уверены, что хотите удалить этот документ?");
+      if (!confirmDelete) return;
+
+      try {
+        await api.deleteDocument(this.document.id);
+        alert("Документ успешно удален!");
+        
+        this.$router.go(-1);
+        goBack();
+      } catch (error) {
+        console.error("Ошибка удаления документа:", error);
       }
     },
     async downloadDocument() {
@@ -89,6 +123,13 @@ export default {
       }
       return true;
     },
+    resetChanges() {
+      this.document.fileName = this.originalFileName;
+      this.document.description = this.originalDescription;
+    },
+    goBack() {
+      this.$router.go(-1);
+    },
   },
 };
 </script>
@@ -101,6 +142,7 @@ export default {
   background-color: #f9f9f9;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
 }
 h2 {
   font-size: 24px;
@@ -137,26 +179,66 @@ label {
 .actions {
   margin-top: 25px;
   text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
 }
 button {
   margin-right: 12px;
   padding: 12px 18px;
-  background-color: #42b983;
-  color: white;
-  border: none;
+  border: 1px solid #ccc;
+  background-color: transparent;
+  color: #333;
   border-radius: 8px;
   font-size: 16px;
   cursor: pointer;
   transition: background-color 0.3s;
 }
 button:hover {
-  background-color: #369f6e;
+  background-color: #eee;
 }
 .secondary-button {
-  background-color: #ddd;
-  color: #333;
+  border-color: #bbb;
 }
 .secondary-button:hover {
-  background-color: #bbb;
+  background-color: #f4f4f4;
+}
+.danger-button {
+  border-color: #f44336;
+  color: #f44336;
+}
+.danger-button:hover {
+  background-color: #f44336;
+  color: white;
+}
+.back-button {
+  border-color: #f44336;
+  color: #f44336;
+}
+.back-button:hover {
+  background-color: #f44336;
+  color: white;
+}
+
+.action-icons {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.download-icon,
+.delete-icon {
+  font-size: 30px;
+  color: #777;
+  cursor: pointer;
+}
+
+.download-icon:hover,
+.delete-icon:hover {
+  color: #555;
 }
 </style>

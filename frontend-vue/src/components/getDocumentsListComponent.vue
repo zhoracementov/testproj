@@ -8,20 +8,27 @@
         class="document-card"
         @click="viewDocument(document.id)"
       >
-        <div class="card-header">
-          <p class="format-text">{{ getFileFormat(document.fileName) }}</p>
+        <div class="card-header" :style="{ backgroundColor: getFormatColor(getFileFormat(document.fileName)) }">
+          <p class="format-text">
+            {{ getFileFormat(document.fileName) }}
+          </p>
         </div>
         <div class="card-title">
           <h3>{{ document.fileName }}</h3>
         </div>
         <div class="card-footer">
           <div class="info">
-            <p>{{ document.fileSize.toFixed(2) }} МБ · {{ formatDate(document.uploadedAt) }}</p>
+            <p class="info-text">{{ document.fileSize.toFixed(2) }} Mb · {{ formatDate(document.uploadedAt) }}</p>
           </div>
           <div class="actions">
-            <button @click.stop="downloadDocument(document.id)" class="action-button">Скачать</button>
-            <button @click.stop="deleteDocument(document.id)" class="action-button">Удалить</button>
+            <i @click.stop="downloadDocument(document.id)" class="fas fa-download action-icon"></i>
+            <i @click.stop="deleteDocument(document.id)" class="fas fa-trash action-icon"></i>
           </div>
+        </div>
+        
+        <!-- Tooltip with description -->
+        <div class="tooltip" v-if="document.description">
+          {{ document.description }}
         </div>
       </div>
 
@@ -45,7 +52,7 @@ export default {
   async created() {
     await this.fetchDocuments();
   },
-   methods: {
+  methods: {
     async fetchDocuments() {
       try {
         const response = await api.getDocuments();
@@ -86,7 +93,7 @@ export default {
         alert('Ошибка при скачивании документа: ' + error.message);
       }
     },
-     async deleteDocument(id) {
+    async deleteDocument(id) {
       try {
         await api.deleteDocument(id);
         alert('Документ успешно удален!');
@@ -96,7 +103,7 @@ export default {
         alert('Ошибка при удалении документа: ' + error.message);
       }
     },
-     formatDate(dateString) {
+    formatDate(dateString) {
       const date = new Date(dateString);
       return date.toLocaleDateString();
     },
@@ -105,6 +112,18 @@ export default {
     },
     getFileFormat(fileName) {
       return fileName.split('.').pop().toUpperCase();
+    },
+    getFormatColor(format) {
+      const formatColors = {
+        PDF: '#FF6347',     // Tomato
+        DOCX: '#4682B4',    // SteelBlue
+        JPG: '#FFD700',     // Gold
+        PNG: '#32CD32',     // LimeGreen
+        TXT: '#8A2BE2',     // BlueViolet
+        XLSX: '#20B2AA',    // LightSeaGreen
+        default: '#A9A9A9', // DarkGray for unknown formats
+      };
+      return formatColors[format] || formatColors.default;
     },
   },
 };
@@ -122,7 +141,6 @@ export default {
   width: 200px;
   height: 300px;
   padding: 15px;
-  background-color: #f9f9f9;
   border-radius: 8px;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
   cursor: pointer;
@@ -130,6 +148,7 @@ export default {
   flex-direction: column;
   justify-content: space-between;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  position: relative; /* Для позиционирования tooltip */
 }
 
 .document-card:hover {
@@ -140,7 +159,6 @@ export default {
 .card-header {
   width: 100%;
   height: 200px;
-  background-color: #0091ea;
   border-radius: 8px;
   display: flex;
   justify-content: center;
@@ -152,6 +170,8 @@ export default {
   color: white;
   font-weight: bold;
   text-transform: uppercase;
+  padding: 5px;
+  border-radius: 5px;
 }
 
 .card-title {
@@ -168,7 +188,7 @@ export default {
   font-size: 16px;
   color: #333;
   font-weight: bold;
-  margin: 0; 
+  margin: 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -190,24 +210,28 @@ export default {
   gap: 4px;
 }
 
+.info-text {
+  font-size: 14px;
+  font-weight: 500;  /* Сделать текст жирнее */
+  color: #333;
+  font-family: 'Arial', sans-serif; /* Более современный шрифт */
+}
+
 .actions {
   display: flex;
-  gap: 5px;
+  gap: 15px;
   margin-left: auto;
 }
 
-.action-button {
-  padding: 6px 8px;
-  background-color: #42b983;
-  color: white;
-  border: none;
-  border-radius: 5px;
+.action-icon {
+  font-size: 18px;
+  color: #bdbdbd;
   cursor: pointer;
-  font-size: 12px;
+  transition: color 0.3s ease;
 }
 
-.action-button:hover {
-  background-color: #369f6e;
+.action-icon:hover {
+  color: #bdbdbd;
 }
 
 .empty-card {
@@ -230,4 +254,24 @@ export default {
   font-size: 48px;
   color: #777;
 }
- </style>
+
+/* Стиль для мини-окна с описанием */
+.tooltip {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 10px;
+  border-radius: 5px;
+  max-width: 180px;
+  font-size: 12px;
+  word-wrap: break-word;
+  display: none;
+}
+
+.document-card:hover .tooltip {
+  display: block; /* Показываем tooltip при наведении */
+}
+</style>
