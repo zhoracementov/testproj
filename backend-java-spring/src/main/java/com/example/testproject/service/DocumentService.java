@@ -29,13 +29,21 @@ public class DocumentService {
     @Value("${file.upload-dir}")
     private String uploadDir;
 
+    private final List<String> SUPPORTED_FILE_TYPES = List.of("text/plain", "application/pdf");
+
     private final DocumentRepository documentRepository;
 
     public DocumentService(DocumentRepository documentRepository) {
         this.documentRepository = documentRepository;
     }
 
+    @Transactional
     public Document UploadDocument(MultipartFile file, String description) throws IOException {
+        String fileType = file.getContentType();
+        if (!SUPPORTED_FILE_TYPES.contains(fileType)) {
+            throw new IllegalArgumentException("Неподдерживаемый тип файла: " + fileType);
+        }
+
         String fileName = new String(Objects.requireNonNull(file.getOriginalFilename()).getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
 
         Document document = new Document();
@@ -45,13 +53,6 @@ public class DocumentService {
         document.setUploadedAt(LocalDateTime.now());
 
         Document res = documentRepository.save(document);
-
-        //uploads/
-        //├── 1/                # Папка для документа с id = 1
-        //│   └── document.pdf  # Файл с исходным именем
-        //├── 2/                # Папка для документа с id = 2
-        //│   └── report.docx   # Файл с исходным именем
-        //└── ...
 
         String subFolderName = document.getId().toString();
         Path subFolderPath = Paths.get(uploadDir, subFolderName);

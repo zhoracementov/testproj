@@ -5,6 +5,7 @@ import com.example.testproject.repository.DocumentUpdateRequest;
 import com.example.testproject.service.DocumentService;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,11 +29,18 @@ public class DocumentController {
 
     //POST /documents/upload — загрузить документ (multipart/form-data).
     @PostMapping("/upload")
-    public ResponseEntity<Document> UploadDocument(@RequestParam("file") MultipartFile file,
-                                                   @RequestParam("description") String description) throws IOException
-    {
-        Document document = documentService.UploadDocument(file, description);
-        return ResponseEntity.ok(document);
+    public ResponseEntity<?> uploadDocument(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam("description") String description
+    ) {
+        try {
+            Document document = documentService.UploadDocument(file, description);
+            return ResponseEntity.ok(document);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ошибка при загрузке файла");
+        }
     }
 
     //GET /documents — получить список всех документов с метаданными.
