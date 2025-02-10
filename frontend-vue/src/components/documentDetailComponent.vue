@@ -1,6 +1,6 @@
 <template>
   <div class="document-detail-container">
-    <h2>{{ originalFileName }}</h2>
+    <h2>{{ removeFileExtension(originalFileName) }}</h2>
 
     <div class="field">
       <label for="fileName">Edit file name:</label>
@@ -20,8 +20,28 @@
         v-model="document.description"
         class="textarea-field"
         rows="4"
-        placeholder="Enter a new description"
-      ></textarea>
+        placeholder="Enter a new description">
+      </textarea>
+
+    </div>
+
+    <div class="field">
+      <label for="tags">Edit tags:</label>
+      <div class="tags-container">
+        <div class="tag-chip" v-for="(tag, index) in document.tags" :key="index">
+          {{ tag }}
+          <span class="remove-tag" @click="removeTag(index)">×</span>
+        </div>
+      </div>
+      <input
+        id="tags"
+        v-model="newTag"
+        type="text"
+        class="input-field"
+        placeholder="Add a new tag"
+        @keyup.enter="addTag"
+      />
+      <small class="hint">Press Enter to add a tag</small>
     </div>
 
     <div class="actions">
@@ -43,9 +63,12 @@ import api from "@/services/api";
 export default {
   data() {
     return {
-      document: null,
+      document: {
+        tags: []
+      },
       originalFileName: "",
       originalDescription: "",
+      newTag: ""
     };
   },
   async created() {
@@ -60,23 +83,24 @@ export default {
     }
   },
   methods: {
+    removeFileExtension(fileName) {
+      return fileName.substring(0, fileName.lastIndexOf('.')) || fileName;
+    },
     async updateDocument() {
-      // Проверка на изменения
       if (
         this.document.fileName === this.originalFileName &&
-        this.document.description === this.originalDescription
+        this.document.description === this.originalDescription &&
+        JSON.stringify(this.document.tags) === JSON.stringify(this.originalTags)
       ) {
         alert("Нет изменений для обновления.");
-        return; // Если изменений нет, операция не выполняется
+        return;
       }
-
-      // Валидация имени файла
-      if (!this.validateFileName(this.document.fileName)) return;
 
       try {
         const payload = {
           fileName: this.document.fileName,
           description: this.document.description,
+          tags: this.document.tags
         };
         await api.updateDocument(this.document.id, payload);
         alert("Документ успешно обновлен!");
@@ -86,19 +110,22 @@ export default {
         console.error("Ошибка обновления документа:", error);
       }
     },
-    async deleteDocument() {
-      const confirmDelete = confirm("Вы уверены, что хотите удалить этот документ?");
-      if (!confirmDelete) return;
-
-      try {
-        await api.deleteDocument(this.document.id);
-        alert("Документ успешно удален!");
-        
-        this.$router.go(-1);
-        goBack();
-      } catch (error) {
-        console.error("Ошибка удаления документа:", error);
+    addTag() {
+      const trimmedTag = this.newTag.trim();
+      if (trimmedTag && !this.document.tags.includes(trimmedTag)) {
+        this.document.tags.push(trimmedTag);
+        this.newTag = "";
       }
+    },
+    removeTag(index) {
+      this.document.tags.splice(index, 1);
+    },
+    resetChanges() {
+      this.document.fileName = this.originalFileName;
+      this.document.description = this.originalDescription;
+    },
+    goBack() {
+      this.$router.go(-1);
     },
     async downloadDocument() {
       try {
@@ -113,33 +140,29 @@ export default {
         console.error("Ошибка скачивания документа:", error);
       }
     },
-    validateFileName(fileName) {
-      const validPattern = /^[\p{L}\d\s._-]+$/u;
-      if (!validPattern.test(fileName)) {
-        alert(
-          "Имя файла содержит недопустимые символы. Разрешены буквы, цифры, точки, подчеркивания и дефисы."
-        );
-        return false;
+    async deleteDocument() {
+      const confirmDelete = confirm("Вы уверены, что хотите удалить этот документ?");
+      if (!confirmDelete) return;
+
+      try {
+        await api.deleteDocument(this.document.id);
+        alert("Документ успешно удален!");
+        this.$router.go(-1);
+      } catch (error) {
+        console.error("Ошибка удаления документа:", error);
       }
-      return true;
-    },
-    resetChanges() {
-      this.document.fileName = this.originalFileName;
-      this.document.description = this.originalDescription;
-    },
-    goBack() {
-      this.$router.go(-1);
-    },
-  },
+    }
+  }
 };
 </script>
+
 
 <style scoped>
 .document-detail-container {
   max-width: 600px;
   margin: 0 auto;
   padding: 25px;
-  background-color: #f9f9f9;
+  background-color: #e8e8e8;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   position: relative;
@@ -147,7 +170,7 @@ export default {
 h2 {
   font-size: 24px;
   margin-bottom: 25px;
-  color: #333;
+  color: #222;
   text-align: center;
   font-weight: 600;
 }
@@ -158,7 +181,7 @@ label {
   display: block;
   font-weight: bold;
   margin-bottom: 8px;
-  color: #555;
+  color: #444;
 }
 .input-field,
 .textarea-field {
@@ -176,6 +199,37 @@ label {
   outline: none;
   box-shadow: 0 0 4px rgba(66, 185, 131, 0.4);
 }
+.textarea-field {
+  resize: none;
+}
+.tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.tag-chip {
+  background: linear-gradient(135deg, #8e44ad, #3498db);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 16px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+}
+.remove-tag {
+  margin-left: 8px;
+  cursor: pointer;
+  color: white;
+  font-weight: bold;
+}
+.remove-tag:hover {
+  color: #ff4d4d;
+}
+.hint {
+  font-size: 12px;
+  color: #888;
+}
 .actions {
   margin-top: 25px;
   text-align: center;
@@ -185,7 +239,6 @@ label {
   gap: 15px;
 }
 button {
-  margin-right: 12px;
   padding: 12px 18px;
   border: 1px solid #ccc;
   background-color: transparent;
@@ -204,14 +257,6 @@ button:hover {
 .secondary-button:hover {
   background-color: #f4f4f4;
 }
-.danger-button {
-  border-color: #f44336;
-  color: #f44336;
-}
-.danger-button:hover {
-  background-color: #f44336;
-  color: white;
-}
 .back-button {
   border-color: #f44336;
   color: #f44336;
@@ -220,7 +265,6 @@ button:hover {
   background-color: #f44336;
   color: white;
 }
-
 .action-icons {
   position: absolute;
   bottom: 20px;
@@ -229,14 +273,12 @@ button:hover {
   gap: 15px;
   align-items: center;
 }
-
 .download-icon,
 .delete-icon {
   font-size: 30px;
   color: #777;
   cursor: pointer;
 }
-
 .download-icon:hover,
 .delete-icon:hover {
   color: #555;

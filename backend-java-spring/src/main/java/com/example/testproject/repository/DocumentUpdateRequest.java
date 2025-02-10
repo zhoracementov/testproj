@@ -1,14 +1,18 @@
 package com.example.testproject.repository;
 
+import java.util.List;
+import java.util.Set;
+
 public class DocumentUpdateRequest {
     private String fileName;
     private String description;
+    private Set<Tag> tags;
 
-    public DocumentUpdateRequest(String fileName, String description) {
+    public DocumentUpdateRequest(String fileName, String description, Set<Tag> tags) {
         this.fileName = fileName;
         this.description = description;
+        this.tags = tags;
     }
-
 
     public String getFileName() {
         return fileName;
@@ -25,4 +29,13 @@ public class DocumentUpdateRequest {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    public Set<Tag> getTags() {
+        return tags;
+    }
+
+    public void setTags(Set<Tag> tags) {
+        this.tags = tags;
+    }
+
 }

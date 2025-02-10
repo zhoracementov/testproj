@@ -1,8 +1,6 @@
 package com.example.testproject.service;
 
-import com.example.testproject.repository.Document;
-import com.example.testproject.repository.DocumentRepository;
-import com.example.testproject.repository.DocumentUpdateRequest;
+import com.example.testproject.repository.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -18,9 +16,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 public class DocumentService {
@@ -32,8 +28,21 @@ public class DocumentService {
 
     private final DocumentRepository documentRepository;
 
+    private TagRepository tagRepository;
+
     public DocumentService(DocumentRepository documentRepository) {
         this.documentRepository = documentRepository;
+    }
+
+    @Transactional
+    public Document CreateDocument(String fileName, Long fileSize, String description) {
+        Document document = new Document();
+        document.setFileName(fileName);
+        document.setFileSize(fileSize / (1024.0d * 1024.0d));
+        document.setDescription(description);
+        document.setUploadedAt(LocalDateTime.now());
+
+        return documentRepository.save(document);
     }
 
     @Transactional
@@ -45,11 +54,7 @@ public class DocumentService {
 
         String fileName = file.getOriginalFilename();
 
-        Document document = new Document();
-        document.setFileName(fileName);
-        document.setFileSize(file.getSize() / (1024.0d * 1024.0d));
-        document.setDescription(description);
-        document.setUploadedAt(LocalDateTime.now());
+        Document document = CreateDocument(fileName, file.getSize(), description);
 
         Document res = documentRepository.save(document);
 
@@ -102,6 +107,10 @@ public class DocumentService {
             document.setDescription(updateRequest.getDescription());
         }
 
+        if (updateRequest.getTags() != null) {
+            document.setTags(updateRequest.getTags());
+        }
+
         return documentRepository.save(document);
     }
 
@@ -123,5 +132,15 @@ public class DocumentService {
         }
 
         documentRepository.deleteById(id);
+    }
+
+    @Transactional
+    public void UpdateDocumentTags(Long id, Set<Tag> tags) {
+
+        Document document = documentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Document not found with id: " + id));
+
+        document.setTags(tags);
+        documentRepository.save(document);
     }
 }

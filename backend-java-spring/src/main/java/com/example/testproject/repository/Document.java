@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Table(name = "document")
@@ -20,6 +23,15 @@ public class Document {
     @Column(name = "uploadedat", nullable = false)
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime uploadedAt;
+
+    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @JoinTable(
+            name = "document_tags",
+            joinColumns = @JoinColumn(name = "document_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_name")
+    )
+
+    private Set<Tag> tags = new HashSet<>();
 
     public Document(Long id, String fileName, Double fileSize, String description, LocalDateTime uploadedAt) {
         this.id = id;
@@ -75,4 +87,8 @@ public class Document {
     public String GetFilePath() {
         return fileName + id.toString();
     }
+
+    public Set<Tag> getTags() { return tags; }
+
+    public void setTags(Set<Tag> tags) { this.tags = tags; }
 }

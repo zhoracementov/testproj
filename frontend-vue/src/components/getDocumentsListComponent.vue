@@ -6,8 +6,7 @@
         v-for="document in documents"
         :key="document.id"
         class="document-card"
-        @click="viewDocument(document.id)"
-      >
+        @click="viewDocument(document.id)">
         <div class="card-header" :style="{ backgroundColor: getFormatColor(getFileFormat(document.fileName)) }">
           <p class="format-text">
             {{ getFileFormat(document.fileName) }}
@@ -15,6 +14,9 @@
         </div>
         <div class="card-title">
           <h3>{{ getFileNameWithoutExtension(document.fileName) }}</h3>
+        </div>
+        <div class="tags">
+          <span v-for="(tag, index) in document.tags.slice(0, 3)" :key="index" class="tag">{{ tag.name }}</span>
         </div>
         <div class="card-footer">
           <div class="info">
@@ -26,7 +28,6 @@
           </div>
         </div>
         
-        <!-- Tooltip with description -->
         <div class="tooltip" v-if="document.description">
           {{ document.description }}
         </div>
@@ -169,7 +170,7 @@ export default {
 }
 
 .format-text {
-  font-size: 40px;
+  font-size: 32px;
   color: white;
   font-weight: bold;
   text-transform: uppercase;
@@ -278,4 +279,33 @@ export default {
 .document-card:hover .tooltip {
   opacity: 1;
 }
+
+.tags {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-top: 5px;
+}
+
+.tag {
+  background: linear-gradient(135deg, #8e44ad, #3498db);
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 4px 12px;
+  border-radius: 16px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  white-space: nowrap;
+  text-transform: capitalize;
+  cursor: default;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.tag:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+
+
 </style>

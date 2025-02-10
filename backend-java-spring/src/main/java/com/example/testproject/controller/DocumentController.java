@@ -1,6 +1,7 @@
 package com.example.testproject.controller;
 
 import com.example.testproject.repository.Document;
+import com.example.testproject.repository.DocumentDTO;
 import com.example.testproject.repository.DocumentUpdateRequest;
 import com.example.testproject.service.DocumentService;
 import org.springframework.core.io.Resource;
@@ -52,8 +53,9 @@ public class DocumentController {
 
     //GET /documents/{id} — получить информацию о документе по ID.
     @GetMapping("/{id}")
-    public Document GetDocumentById(@PathVariable Long id){
-        return documentService.GetDocumentById(id);
+    public ResponseEntity<DocumentDTO> GetDocumentById(@PathVariable Long id) {
+        Document document = documentService.GetDocumentById(id);
+        return ResponseEntity.ok(new DocumentDTO(document));
     }
 
     //GET /documents/{id}/download — скачать документ по ID.
