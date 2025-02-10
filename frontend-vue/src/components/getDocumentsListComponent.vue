@@ -14,7 +14,7 @@
           </p>
         </div>
         <div class="card-title">
-          <h3>{{ document.fileName }}</h3>
+          <h3>{{ getFileNameWithoutExtension(document.fileName) }}</h3>
         </div>
         <div class="card-footer">
           <div class="info">
@@ -64,6 +64,9 @@ export default {
     },
     triggerFileInput() {
       this.$refs.fileInput.click();
+    },
+    getFileNameWithoutExtension(fileName) {
+      return fileName.replace(/\.[^/.]+$/, "");
     },
     async handleFileSelection(event) {
       const file = event.target.files[0];
@@ -148,7 +151,7 @@ export default {
   flex-direction: column;
   justify-content: space-between;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
-  position: relative; /* Для позиционирования tooltip */
+  position: relative;
 }
 
 .document-card:hover {
@@ -212,9 +215,9 @@ export default {
 
 .info-text {
   font-size: 14px;
-  font-weight: 500;  /* Сделать текст жирнее */
+  font-weight: 500;
   color: #333;
-  font-family: 'Arial', sans-serif; /* Более современный шрифт */
+  font-family: 'Arial', sans-serif;
 }
 
 .actions {
@@ -255,7 +258,6 @@ export default {
   color: #777;
 }
 
-/* Стиль для мини-окна с описанием */
 .tooltip {
   position: absolute;
   top: 50%;
@@ -268,10 +270,12 @@ export default {
   max-width: 180px;
   font-size: 12px;
   word-wrap: break-word;
-  display: none;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
 }
 
 .document-card:hover .tooltip {
-  display: block; /* Показываем tooltip при наведении */
+  opacity: 1;
 }
 </style>
