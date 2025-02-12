@@ -25,6 +25,7 @@
           type="text"
           class="input-field"
           placeholder="Enter file name"
+          :disabled="!file"
         />
       </div>
   
@@ -36,6 +37,7 @@
           class="textarea-field"
           rows="4"
           placeholder="Enter description"
+          :disabled="!file"
         ></textarea>
       </div>
   
