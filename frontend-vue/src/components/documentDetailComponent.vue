@@ -68,6 +68,7 @@ export default {
       },
       originalFileName: "",
       originalDescription: "",
+      originalTags: [],
       newTag: ""
     };
   },
@@ -78,6 +79,7 @@ export default {
       this.document = response.data;
       this.originalFileName = this.document.fileName;
       this.originalDescription = this.document.description;
+      this.originalTags = [...this.document.tags]; // Копируем теги при загрузке
     } catch (error) {
       console.error("Ошибка загрузки документа:", error);
     }
@@ -106,6 +108,7 @@ export default {
         alert("Документ успешно обновлен!");
         this.originalFileName = this.document.fileName;
         this.originalDescription = this.document.description;
+        this.originalTags = [...this.document.tags]; // Обновляем сохраненные теги
       } catch (error) {
         console.error("Ошибка обновления документа:", error);
       }
@@ -123,6 +126,7 @@ export default {
     resetChanges() {
       this.document.fileName = this.originalFileName;
       this.document.description = this.originalDescription;
+      this.document.tags = [...this.originalTags]; // Сбрасываем теги
     },
     goBack() {
       this.$router.go(-1);
@@ -155,7 +159,6 @@ export default {
   }
 };
 </script>
-
 
 <style scoped>
 .document-detail-container {
