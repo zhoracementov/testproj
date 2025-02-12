@@ -60,24 +60,24 @@
     },
     methods: {
       triggerFileInput() {
+        this.resetData();
         this.$refs.fileInput.click();
       },
       handleFileSelection(event) {
         const file = event.target.files[0];
         if (file) {
           this.file = file;
-  
-          if (!this.fileName) {
-            this.fileName = file.name.replace(/\.[^/.]+$/, "");
-          }
-  
-          if (!this.description) {
-            this.description = "";
-          }
+          this.fileName = file.name.replace(/\.[^/.]+$/, "");
+          this.description = "";
         }
       },
       goBack() {
         this.$router.go(-1);
+      },
+      resetData() {
+        this.file = null;
+        this.fileName = null;
+        this.description = null;
       },
       async uploadDocument() {
         if (!this.file) {
@@ -95,9 +95,7 @@
           await api.uploadDocument(renamedFile, this.description);
           alert("Document uploaded successfully!");
             
-          this.file = null;
-          this.fileName = null;
-          this.description = null;
+          this.resetData();
           
           this.goBack();
           
