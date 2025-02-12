@@ -6,7 +6,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -48,14 +51,13 @@ public class DocumentService {
     @Transactional
     public Document UploadDocument(MultipartFile file, String description) throws IOException {
         String fileType = file.getContentType();
+
         if (!SUPPORTED_FILE_TYPES.contains(fileType)) {
-            throw new IllegalArgumentException("Неподдерживаемый тип файла: " + fileType);
+            throw new ResponseStatusException(HttpStatus.UNSUPPORTED_MEDIA_TYPE, "Неподдерживаемый тип файла: " + fileType);
         }
 
         String fileName = file.getOriginalFilename();
-
         Document document = CreateDocument(fileName, file.getSize(), description);
-
         Document res = documentRepository.save(document);
 
         String subFolderName = document.getId().toString();
@@ -142,5 +144,9 @@ public class DocumentService {
 
         document.setTags(tags);
         documentRepository.save(document);
+    }
+
+    public List<String> getSupportedFileTypes() {
+        return SUPPORTED_FILE_TYPES;
     }
 }

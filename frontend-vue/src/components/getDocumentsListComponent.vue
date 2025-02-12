@@ -9,7 +9,7 @@
         @click="viewDocument(document.id)">
         <div class="card-header" :style="{ backgroundColor: getFormatColor(getFileFormat(document.fileName)) }">
           <p class="format-text">
-            {{ getFileFormat(document.fileName) }}
+            {{ '.' + getFileFormat(document.fileName) }}
           </p>
         </div>
         <div class="card-title">
@@ -59,9 +59,18 @@ export default {
         const response = await api.getDocuments();
         this.documents = response.data;
       } catch (error) {
-        console.error('Ошибка при загрузке документов:', error);
-        alert('Ошибка при загрузке документов: ' + error.message);
-      }
+          console.error('Ошибка при загрузке документов:', error);
+          if (error.response) {
+            console.error(`Ошибка сервера: ${error.response.status} - ${error.response.data}`);
+          alert(`Ошибка сервера: ${error.response.status} - ${error.response.data}`);
+          } else if (error.request) {
+            console.error('Запрос не был отправлен:', error.request);
+            alert('Ошибка: сервер не отвечает.');
+          } else {
+            console.error('Ошибка при настройке запроса:', error.message);
+            alert('Ошибка: ' + error.message);
+          }
+  }
     },
     triggerFileInput() {
       this.$refs.fileInput.click();
@@ -77,8 +86,19 @@ export default {
           alert('Документ успешно добавлен!');
           await this.fetchDocuments();
         } catch (error) {
-          console.error('Ошибка при загрузке документа:', error);
-          alert('Ошибка при загрузке документа: ' + error.message);
+            if (error.response) {
+              if (error.response.status === 415) {
+                alert("Ошибка: неподдерживаемый формат файла.");
+              }
+              else if (error.response.status == 413) {
+                alert("Error: too much file size");
+              } else {
+                alert(`Ошибка загрузки файла: ${error.response.data || error.message}`);
+              }
+            } else {
+              console.error("Ошибка при загрузке файла. Возможно он был слишком большим:", error);
+              alert("Произошла ошибка при загрузке файла. Возможно он был слишком большим");
+            }
         }
       }
     },
