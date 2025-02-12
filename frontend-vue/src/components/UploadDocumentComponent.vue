@@ -77,8 +77,8 @@
         }
       },
       goBack() {
-      this.$router.go(-1);
-    },
+        this.$router.go(-1);
+      },
       async uploadDocument() {
         if (!this.file) {
           alert("Please choose a file to upload.");
@@ -86,7 +86,13 @@
         }
   
         try {
-          await api.uploadDocument(this.file, "");
+
+            const ext = this.file.name.slice(this.file.name.lastIndexOf('.'));
+            const renamedFile = new File([this.file], this.fileName + ext, {
+            type: this.file.type,
+          });
+
+          await api.uploadDocument(renamedFile, this.description);
           alert("Document uploaded successfully!");
             
           this.file = null;
