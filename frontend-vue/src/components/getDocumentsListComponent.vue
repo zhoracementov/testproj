@@ -35,7 +35,7 @@
 
       <div class="document-card empty-card" @click="triggerFileInput">
         <div class="add-icon">+</div>
-        <input type="file" ref="fileInput" @change="handleFileSelection" style="display: none" />
+        <input type="file" ref="fileInput" style="display: none" />
       </div>
     </div>
   </div>
@@ -73,12 +73,14 @@ export default {
   }
     },
     triggerFileInput() {
-      this.$refs.fileInput.click();
+      this.$router.push('/upload');
     },
     getFileNameWithoutExtension(fileName) {
       return fileName.replace(/\.[^/.]+$/, "");
     },
     async handleFileSelection(event) {
+      this.$router.push('/upload');
+      /*
       const file = event.target.files[0];
       if (file) {
         try {
@@ -100,7 +102,7 @@ export default {
               alert("Произошла ошибка при загрузке файла. Возможно он был слишком большим");
             }
         }
-      }
+      }*/
     },
     async downloadDocument(id) {
       try {
@@ -272,6 +274,7 @@ export default {
 
 .empty-card:hover {
   background-color: #d6d6d6;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;  
 }
 
 .add-icon {
