@@ -146,7 +146,7 @@ export default {
   margin-bottom: 10px;
 }
 .tag-chip {
-  background: linear-gradient(135deg, #8e44ad, #3498db);
+  background: linear-gradient(135deg, #1172dc, #2496db);
   color: white;
   padding: 5px 10px;
   border-radius: 16px;
@@ -172,7 +172,7 @@ export default {
   max-width: 600px;
   margin: 0 auto;
   padding: 25px;
-  background-color: #e8e8e8;
+  background-color: #e1e5e9;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   position: relative;

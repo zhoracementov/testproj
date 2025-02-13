@@ -126,7 +126,7 @@ export default {
       const formatColors = {
         PDF: '#FF6347', 
         DOCX: '#4682B4',
-        TXT: '#8A2BE2',
+        TXT: '#2684fc',
         XLSX: '#20B2AA',
         default: '#A9A9A9',
       };
@@ -292,7 +292,7 @@ export default {
 }
 
 .tag {
-  background: linear-gradient(135deg, #8e44ad, #3498db);
+  background: linear-gradient(135deg, #1172dc, #2496db);
   color: white;
   font-size: 12px;
   font-weight: bold;
