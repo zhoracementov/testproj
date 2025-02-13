@@ -66,6 +66,7 @@ export default {
         tags: []
       },
       originalFileName: "",
+      originalFileNameWithoutExtension: "",
       fileExtension: "",
       originalDescription: "",
       originalTags: [],
