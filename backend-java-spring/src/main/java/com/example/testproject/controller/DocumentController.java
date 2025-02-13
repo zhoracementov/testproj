@@ -16,6 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping(path = "documents")
@@ -32,15 +33,16 @@ public class DocumentController {
     @PostMapping("/upload")
     public ResponseEntity<?> uploadDocument(
             @RequestParam("file") MultipartFile file,
-            @RequestParam("description") String description
+            @RequestParam("description") String description,
+            @RequestParam(value = "tags", required = false) Set<String> tags  // Добавляем параметр для тегов
     ) {
         try {
-            Document document = documentService.UploadDocument(file, description);
+            Document document = documentService.UploadDocument(file, description, tags);  // Передаем теги в сервис
             return ResponseEntity.ok(document);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ошибка при загрузке файла");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("File upload error");
         }
     }
 

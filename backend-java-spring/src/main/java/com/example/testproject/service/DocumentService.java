@@ -38,18 +38,29 @@ public class DocumentService {
     }
 
     @Transactional
-    public Document CreateDocument(String fileName, Long fileSize, String description) {
+    public Document CreateDocument(String fileName, Long fileSize, String description, Set<String> tags) {
         Document document = new Document();
         document.setFileName(fileName);
         document.setFileSize(fileSize / (1024.0d * 1024.0d));
         document.setDescription(description);
         document.setUploadedAt(LocalDateTime.now());
 
+        if (tags != null && !tags.isEmpty()) {
+            Set<Tag> tagSet = new HashSet<>();
+            for (String tagName : tags) {
+                Tag tag = tagRepository.findByName(tagName)
+                        .orElseGet(() -> tagRepository.save(new Tag(tagName)));
+                tagSet.add(tag);
+            }
+            document.setTags(tagSet);
+        }
+
+
         return documentRepository.save(document);
     }
 
     @Transactional
-    public Document UploadDocument(MultipartFile file, String description) throws IOException {
+    public Document UploadDocument(MultipartFile file, String description, Set<String> tags) throws IOException {
         String fileType = file.getContentType();
 
         if (!SUPPORTED_FILE_TYPES.contains(fileType)) {
@@ -57,7 +68,8 @@ public class DocumentService {
         }
 
         String fileName = file.getOriginalFilename();
-        Document document = CreateDocument(fileName, file.getSize(), description);
+        Document document = CreateDocument(fileName, file.getSize(), description, tags);
+
         Document res = documentRepository.save(document);
 
         String subFolderName = document.getId().toString();
