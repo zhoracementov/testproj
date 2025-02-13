@@ -1,8 +1,7 @@
 <template>
     <div class="document-upload-container">
-      <h2>Upload New Document</h2>
+      <h2>{{ fileName || 'Upload New Document' }}</h2>
   
-      <!-- Кнопка для выбора файла с иконкой -->
       <div class="field">
         <label for="fileUpload" class="upload-label">
           <i class="fas fa-cloud-upload-alt"></i> Choose File
@@ -16,8 +15,7 @@
         />
       </div>
   
-      <!-- Поля для ввода названия и описания -->
-      <div class="field">
+      <div class="field" v-if="file">
         <label for="fileName">File Name:</label>
         <input
           id="fileName"
@@ -29,7 +27,7 @@
         />
       </div>
   
-      <div class="field">
+      <div class="field" v-if="file">
         <label for="description">Description:</label>
         <textarea
           id="description"
@@ -41,7 +39,7 @@
         ></textarea>
       </div>
   
-      <div class="actions">
+      <div class="actions" v-if="file">
         <button class="primary-button" @click="uploadDocument">Upload</button>
       </div>
     </div>
