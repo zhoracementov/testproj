@@ -59,50 +59,24 @@ export default {
         const response = await api.getDocuments();
         this.documents = response.data;
       } catch (error) {
-          console.error('Ошибка при загрузке документов:', error);
+          console.error('Error loading documents:', error);
           if (error.response) {
-            console.error(`Ошибка сервера: ${error.response.status} - ${error.response.data}`);
-          alert(`Ошибка сервера: ${error.response.status} - ${error.response.data}`);
+            console.error(`Server error: ${error.response.status} - ${error.response.data}`);
+            alert(`Server error: ${error.response.status} - ${error.response.data}`);
           } else if (error.request) {
-            console.error('Запрос не был отправлен:', error.request);
-            alert('Ошибка: сервер не отвечает.');
+            console.error('Request was not sent:', error.request);
+            alert('Error: Server is not responding.');
           } else {
-            console.error('Ошибка при настройке запроса:', error.message);
-            alert('Ошибка: ' + error.message);
+            console.error('Error setting up the request:', error.message);
+            alert('Error: ' + error.message);
           }
-  }
+      }
     },
     triggerFileInput() {
       this.$router.push('/upload');
     },
     getFileNameWithoutExtension(fileName) {
       return fileName.replace(/\.[^/.]+$/, "");
-    },
-    async handleFileSelection(event) {
-      this.$router.push('/upload');
-      /*
-      const file = event.target.files[0];
-      if (file) {
-        try {
-          await api.uploadDocument(file, "");
-          alert('Документ успешно добавлен!');
-          await this.fetchDocuments();
-        } catch (error) {
-            if (error.response) {
-              if (error.response.status === 415) {
-                alert("Ошибка: неподдерживаемый формат файла.");
-              }
-              else if (error.response.status == 413) {
-                alert("Error: too much file size");
-              } else {
-                alert(`Ошибка загрузки файла: ${error.response.data || error.message}`);
-              }
-            } else {
-              console.error("Ошибка при загрузке файла. Возможно он был слишком большим:", error);
-              alert("Произошла ошибка при загрузке файла. Возможно он был слишком большим");
-            }
-        }
-      }*/
     },
     async downloadDocument(id) {
       try {
@@ -115,18 +89,27 @@ export default {
         link.click();
         link.remove();
       } catch (error) {
-        console.error('Ошибка при скачивании документа:', error);
-        alert('Ошибка при скачивании документа: ' + error.message);
+        if (error.response) {
+          if (error.response.status === 500) {
+            alert("Error downloading the document");
+          } else {
+            console.error('Error downloading the document:', error);
+            alert('Error downloading the document: ' + error.message);
+          }
+        } else {
+          console.error('Error downloading the document:', error);
+          alert('Error downloading the document: ' + error.message);
+        }
       }
     },
     async deleteDocument(id) {
       try {
         await api.deleteDocument(id);
-        alert('Документ успешно удален!');
+        alert('Document successfully deleted!');
         await this.fetchDocuments();
       } catch (error) {
-        console.error('Ошибка при удалении документа:', error);
-        alert('Ошибка при удалении документа: ' + error.message);
+        console.error('Error deleting the document:', error);
+        alert('Error deleting the document: ' + error.message);
       }
     },
     formatDate(dateString) {
@@ -141,13 +124,11 @@ export default {
     },
     getFormatColor(format) {
       const formatColors = {
-        PDF: '#FF6347',     // Tomato
-        DOCX: '#4682B4',    // SteelBlue
-        JPG: '#FFD700',     // Gold
-        PNG: '#32CD32',     // LimeGreen
-        TXT: '#8A2BE2',     // BlueViolet
-        XLSX: '#20B2AA',    // LightSeaGreen
-        default: '#A9A9A9', // DarkGray for unknown formats
+        PDF: '#FF6347', 
+        DOCX: '#4682B4',
+        TXT: '#8A2BE2',
+        XLSX: '#20B2AA',
+        default: '#A9A9A9',
       };
       return formatColors[format] || formatColors.default;
     },
@@ -328,7 +309,4 @@ export default {
   transform: translateY(-3px);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
-
-
-
 </style>

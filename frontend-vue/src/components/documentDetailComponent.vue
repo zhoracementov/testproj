@@ -22,7 +22,6 @@
         rows="4"
         placeholder="Enter a new description">
       </textarea>
-
     </div>
 
     <div class="field">
@@ -79,9 +78,9 @@ export default {
       this.document = response.data;
       this.originalFileName = this.document.fileName;
       this.originalDescription = this.document.description;
-      this.originalTags = [...this.document.tags]; // Копируем теги при загрузке
+      this.originalTags = [...this.document.tags]; // Copy tags on load
     } catch (error) {
-      console.error("Ошибка загрузки документа:", error);
+      console.error("Error loading document:", error);
     }
   },
   methods: {
@@ -94,7 +93,7 @@ export default {
         this.document.description === this.originalDescription &&
         JSON.stringify(this.document.tags) === JSON.stringify(this.originalTags)
       ) {
-        alert("Нет изменений для обновления.");
+        alert("No changes to update.");
         return;
       }
 
@@ -105,12 +104,12 @@ export default {
           tags: this.document.tags
         };
         await api.updateDocument(this.document.id, payload);
-        alert("Документ успешно обновлен!");
+        alert("Document updated successfully!");
         this.originalFileName = this.document.fileName;
         this.originalDescription = this.document.description;
-        this.originalTags = [...this.document.tags]; // Обновляем сохраненные теги
+        this.originalTags = [...this.document.tags]; // Update saved tags
       } catch (error) {
-        console.error("Ошибка обновления документа:", error);
+        console.error("Error updating document:", error);
       }
     },
     addTag() {
@@ -126,7 +125,7 @@ export default {
     resetChanges() {
       this.document.fileName = this.originalFileName;
       this.document.description = this.originalDescription;
-      this.document.tags = [...this.originalTags]; // Сбрасываем теги
+      this.document.tags = [...this.originalTags]; // Reset tags
     },
     goBack() {
       this.$router.go(-1);
@@ -141,19 +140,19 @@ export default {
         document.body.appendChild(link);
         link.click();
       } catch (error) {
-        console.error("Ошибка скачивания документа:", error);
+        console.error("Error downloading document:", error);
       }
     },
     async deleteDocument() {
-      const confirmDelete = confirm("Вы уверены, что хотите удалить этот документ?");
+      const confirmDelete = confirm("Are you sure you want to delete this document?");
       if (!confirmDelete) return;
 
       try {
         await api.deleteDocument(this.document.id);
-        alert("Документ успешно удален!");
+        alert("Document deleted successfully!");
         this.$router.go(-1);
       } catch (error) {
-        console.error("Ошибка удаления документа:", error);
+        console.error("Error deleting document:", error);
       }
     }
   }

@@ -1,7 +1,12 @@
 <template>
   <div id="app">
     <nav>
-      <router-link to="/">Back</router-link>
+      <router-link 
+        to="/" 
+        v-if="$route.path !== '/'" 
+        class="back-link">
+        ← Back to Documents
+      </router-link>
     </nav>
     <router-view />
   </div>
@@ -16,18 +21,31 @@ export default {
 <style>
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
   text-align: center;
-  margin-top: 60px;
 }
+
 nav {
-  margin-bottom: 20px;
+  margin-bottom: 30px;
+  text-align: left;
 }
-nav a {
-  margin: 0 10px;
+
+.back-link {
   text-decoration: none;
-  color: blue;
+  color: #3498db;
+  font-weight: 500;
+  transition: color 0.3s ease;
+  display: inline-block;
+  padding: 8px 15px;
+  border-radius: 5px;
+  background-color: #f8f9fa;
 }
-nav a:hover {
-  text-decoration: underline;
+
+.back-link:hover {
+  color: #2980b9;
+  background-color: #e9ecef;
+  text-decoration: none;
 }
 </style>
