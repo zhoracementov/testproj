@@ -1,12 +1,12 @@
 <template>
   <div class="document-detail-container">
-    <h2>{{ removeFileExtension(originalFileName) }}</h2>
+    <h2>{{ originalFileNameWithoutExtension }}</h2>
 
     <div class="field">
       <label for="fileName">Edit file name:</label>
       <input
         id="fileName"
-        v-model="document.fileName"
+        v-model="documentFileName"
         type="text"
         class="input-field"
         placeholder="Enter a new file name"
@@ -66,9 +66,11 @@ export default {
         tags: []
       },
       originalFileName: "",
+      fileExtension: "",
       originalDescription: "",
       originalTags: [],
-      newTag: ""
+      newTag: "",
+      documentFileName: ""
     };
   },
   async created() {
@@ -77,19 +79,25 @@ export default {
       const response = await api.getDocumentById(id);
       this.document = response.data;
       this.originalFileName = this.document.fileName;
+      this.fileExtension = this.getFileExtension(this.originalFileName);
+      this.originalFileNameWithoutExtension = this.removeFileExtension(this.originalFileName);
+      this.documentFileName = this.originalFileNameWithoutExtension;
       this.originalDescription = this.document.description;
-      this.originalTags = [...this.document.tags]; // Copy tags on load
+      this.originalTags = [...this.document.tags];
     } catch (error) {
       console.error("Error loading document:", error);
     }
   },
   methods: {
     removeFileExtension(fileName) {
-      return fileName.substring(0, fileName.lastIndexOf('.')) || fileName;
+      return fileName.substring(0, fileName.lastIndexOf(".")) || fileName;
+    },
+    getFileExtension(fileName) {
+      return fileName.includes(".") ? fileName.substring(fileName.lastIndexOf(".")) : "";
     },
     async updateDocument() {
       if (
-        this.document.fileName === this.originalFileName &&
+        this.documentFileName === this.originalFileNameWithoutExtension &&
         this.document.description === this.originalDescription &&
         JSON.stringify(this.document.tags) === JSON.stringify(this.originalTags)
       ) {
@@ -99,15 +107,15 @@ export default {
 
       try {
         const payload = {
-          fileName: this.document.fileName,
+          fileName: this.documentFileName + this.fileExtension,
           description: this.document.description,
           tags: this.document.tags
         };
         await api.updateDocument(this.document.id, payload);
         alert("Document updated successfully!");
-        this.originalFileName = this.document.fileName;
+        this.originalFileNameWithoutExtension = this.documentFileName;
         this.originalDescription = this.document.description;
-        this.originalTags = [...this.document.tags]; // Update saved tags
+        this.originalTags = [...this.document.tags];
       } catch (error) {
         console.error("Error updating document:", error);
       }
