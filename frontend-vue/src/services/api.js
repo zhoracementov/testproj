@@ -8,10 +8,19 @@ const apiClient = axios.create({
 });
 
 export default {
-    uploadDocument(file, description) {
+    uploadDocument(file, description, tags) {
+        let filteredTags = ["test1", "ttt1"];
+        //if (tags != null) {
+        //    filteredTags = tags.filter(tag => tag !== undefined && tag !== null && tag.trim() !== "").map(tag => tag.trim());
+        //}
+
         const formData = new FormData();
         formData.append('file', file);
         formData.append('description', description);
+        formData.append('tags', filteredTags);
+        //filteredTags.forEach((tag, index) => {
+        //   formData.append(`tags[${index}]`, tag);
+        //});
 
         return apiClient.post('/documents/upload', formData, {
             headers: {

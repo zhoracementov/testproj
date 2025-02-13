@@ -1,7 +1,7 @@
 package com.example.testproject.repository;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-
 import java.util.HashSet;
 import java.util.Set;
 
@@ -10,11 +10,11 @@ import java.util.Set;
 public class Tag {
 
     @Id
-    @Column(name = "name", nullable = false, unique = true, length = 15)
+    @Column(name = "name", nullable = false, unique = true, length = 7)
     private String name;
 
     @JsonBackReference
-    @ManyToMany(mappedBy = "tags")
+    @ManyToMany(mappedBy = "tags", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Set<Document> documents = new HashSet<>();
 
     public Tag(String name, Set<Document> documents) {
@@ -27,7 +27,6 @@ public class Tag {
     }
 
     public Tag() {
-
     }
 
     public String getName() {
@@ -35,6 +34,9 @@ public class Tag {
     }
 
     public void setName(String name) {
+        if (name == null || name.trim().isEmpty()) {
+            throw new IllegalArgumentException("Tag name cannot be null or empty");
+        }
         this.name = name;
     }
 
@@ -44,5 +46,18 @@ public class Tag {
 
     public void setDocuments(Set<Document> documents) {
         this.documents = documents;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Tag tag = (Tag) o;
+        return name.equals(tag.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return name.hashCode();
     }
 }

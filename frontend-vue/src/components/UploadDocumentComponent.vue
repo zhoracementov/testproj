@@ -126,7 +126,9 @@ export default {
           type: this.file.type,
         });
 
-        await api.uploadDocument(renamedFile, this.description);
+        let tags = ["test1", "ttt1"];
+
+        await api.uploadDocument(renamedFile, this.description, tags);
         this.statusMessage = "File uploaded successfully!";
         alert("Document uploaded successfully!");
 

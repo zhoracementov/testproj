@@ -34,10 +34,10 @@ public class DocumentController {
     public ResponseEntity<?> uploadDocument(
             @RequestParam("file") MultipartFile file,
             @RequestParam("description") String description,
-            @RequestParam(value = "tags", required = false) Set<String> tags  // Добавляем параметр для тегов
+            @RequestParam(value = "tags", required = false) List<String> tags  // Добавляем параметр для тегов
     ) {
         try {
-            Document document = documentService.UploadDocument(file, description, tags);  // Передаем теги в сервис
+            Document document = documentService.UploadDocument(file, description, tags);
             return ResponseEntity.ok(document);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());

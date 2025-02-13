@@ -30,15 +30,15 @@ public class DocumentService {
     private final List<String> SUPPORTED_FILE_TYPES = List.of("text/plain", "application/pdf");
 
     private final DocumentRepository documentRepository;
+    private final TagRepository tagRepository;
 
-    private TagRepository tagRepository;
-
-    public DocumentService(DocumentRepository documentRepository) {
+    public DocumentService(DocumentRepository documentRepository, TagRepository tagRepository) {
         this.documentRepository = documentRepository;
+        this.tagRepository = tagRepository;
     }
 
     @Transactional
-    public Document CreateDocument(String fileName, Long fileSize, String description, Set<String> tags) {
+    public Document CreateDocument(String fileName, Long fileSize, String description, List<String> tags) {
         Document document = new Document();
         document.setFileName(fileName);
         document.setFileSize(fileSize / (1024.0d * 1024.0d));
@@ -48,19 +48,31 @@ public class DocumentService {
         if (tags != null && !tags.isEmpty()) {
             Set<Tag> tagSet = new HashSet<>();
             for (String tagName : tags) {
+                if (tagName == null || tagName.trim().isEmpty()) {
+                    continue;
+                }
                 Tag tag = tagRepository.findByName(tagName)
                         .orElseGet(() -> tagRepository.save(new Tag(tagName)));
                 tagSet.add(tag);
-            }
+                }
+
             document.setTags(tagSet);
         }
+//            Set<Tag> tagSet = new HashSet<>();
+//            for (String tagName : tags) {
+//                Tag tag = tagRepository.findByName(tagName)
+//                        .orElseGet(() -> tagRepository.save(new Tag(tagName)));
+//                tagSet.add(tag);
+//            }
+//            document.setTags(tagSet);
+
 
 
         return documentRepository.save(document);
     }
 
     @Transactional
-    public Document UploadDocument(MultipartFile file, String description, Set<String> tags) throws IOException {
+    public Document UploadDocument(MultipartFile file, String description, List<String> tags) throws IOException {
         String fileType = file.getContentType();
 
         if (!SUPPORTED_FILE_TYPES.contains(fileType)) {
@@ -146,16 +158,6 @@ public class DocumentService {
         }
 
         documentRepository.deleteById(id);
-    }
-
-    @Transactional
-    public void UpdateDocumentTags(Long id, Set<Tag> tags) {
-
-        Document document = documentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Document not found with id: " + id));
-
-        document.setTags(tags);
-        documentRepository.save(document);
     }
 
     public List<String> getSupportedFileTypes() {
