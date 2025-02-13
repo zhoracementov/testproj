@@ -1,4 +1,4 @@
-package com.example.testproject.repository;
+package com.example.testproject.model;
 
 import java.util.List;
 

@@ -1,12 +1,14 @@
 package com.example.testproject.service;
 
+import com.example.testproject.model.Document;
+import com.example.testproject.model.DocumentUpdateRequest;
+import com.example.testproject.model.Tag;
 import com.example.testproject.repository.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.HttpStatus;

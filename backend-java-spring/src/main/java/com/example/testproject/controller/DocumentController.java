@@ -1,8 +1,8 @@
 package com.example.testproject.controller;
 
-import com.example.testproject.repository.Document;
-import com.example.testproject.repository.DocumentDTO;
-import com.example.testproject.repository.DocumentUpdateRequest;
+import com.example.testproject.model.Document;
+import com.example.testproject.model.DocumentDTO;
+import com.example.testproject.model.DocumentUpdateRequest;
 import com.example.testproject.service.DocumentService;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -16,7 +16,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Set;
 
 @RestController
 @RequestMapping(path = "documents")
