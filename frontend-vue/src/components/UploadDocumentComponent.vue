@@ -39,18 +39,35 @@
       ></textarea>
     </div>
 
+    <div class="field" v-if="file">
+      <label for="tags">Tags:</label>
+      <div class="tags-container">
+        <div class="tag-chip" v-for="(tag, index) in tags" :key="index">
+          {{ tag }}
+          <span class="remove-tag" @click="removeTag(index)">×</span>
+        </div>
+      </div>
+      <input
+        id="tags"
+        v-model="newTag"
+        type="text"
+        class="input-field"
+        placeholder="Add a new tag"
+        @keyup.enter="addTag"
+      />
+      <small class="hint">Press Enter to add a tag</small>
+    </div>
+
     <div class="bottom-container" v-if="file">
       <div class="status-message" :class="{ 'error-message': uploadError }">
         <i class="fas" :class="uploadError ? 'fa-exclamation-circle' : 'fa-file-alt'"></i>
         {{ statusMessage }}
       </div>
-      <div class="actions">
-        <button class="primary-button" @click="uploadDocument">Upload</button>
-      </div>
+      <button class="primary-button" @click="uploadDocument">Upload</button>
     </div>
   </div>
 </template>
-  
+
 <script>
 import api from "@/services/api";
 
@@ -60,94 +77,61 @@ export default {
       fileName: "",
       description: "",
       file: null,
+      tags: [],
+      newTag: "",
       uploadError: false,
       statusMessage: "File selected. Click upload button for saving file",
     };
   },
   methods: {
-    triggerFileInput() {
-      this.resetData();
-      this.$refs.fileInput.click();
-    },
     handleFileSelection(event) {
       const file = event.target.files[0];
       if (file) {
-        if (!this.isFileAccessible(file)) {
-          this.uploadError = true;
-          this.statusMessage = "Error: File is not accessible. Please choose another file.";
-          return;
-        }
-
         this.file = file;
         this.fileName = file.name.replace(/\.[^/.]+$/, "");
         this.description = "";
+        this.tags = [];
+        this.newTag = "";
         this.uploadError = false;
         this.statusMessage = "File selected. Click upload button for saving file";
       }
     },
-    isFileAccessible(file) {
-      try {
-        const reader = new FileReader();
-        reader.readAsArrayBuffer(file);
-        return true;
-      } catch (error) {
-        console.error("File is not accessible:", error);
-        return false;
+    addTag() {
+      const trimmedTag = this.newTag.trim();
+      if (trimmedTag && trimmedTag.length <= 7 && !this.tags.includes(trimmedTag)) {
+        this.tags.push(trimmedTag);
+        this.newTag = "";
+      } else if (trimmedTag.length > 7) {
+        alert("Tag length should not exceed 7 characters.");
       }
     },
-    goBack() {
-      this.$router.go(-1);
-    },
-    resetData() {
-      this.file = null;
-      this.fileName = null;
-      this.description = null;
-      this.uploadError = false;
-      this.statusMessage = "";
+    removeTag(index) {
+      this.tags.splice(index, 1);
     },
     async uploadDocument() {
       if (!this.file) {
         alert("Please choose a file to upload.");
         return;
       }
-
-      if (!this.isFileAccessible(this.file)) {
-        this.uploadError = true;
-        this.statusMessage = "Error: File is not accessible. Please choose another file.";
-        return;
-      }
-
       this.uploadError = false;
       this.statusMessage = "Uploading file...";
-
       try {
         const ext = this.file.name.slice(this.file.name.lastIndexOf("."));
         const renamedFile = new File([this.file], this.fileName + ext, {
           type: this.file.type,
         });
-
-        let tags = ["test1", "ttt1"];
-
-        await api.uploadDocument(renamedFile, this.description, tags);
+        await api.uploadDocument(renamedFile, this.description, this.tags);
         this.statusMessage = "File uploaded successfully!";
         alert("Document uploaded successfully!");
-
-        this.resetData();
-        this.goBack();
+        this.file = null;
+        this.fileName = "";
+        this.description = "";
+        this.tags = [];
+        this.newTag = "";
       } catch (error) {
         this.uploadError = true;
-        if (error.response) {
-          if (error.response.status === 415) {
-            this.statusMessage = "Error: Unsupported file format.";
-          } else if (error.response.status === 413) {
-            this.statusMessage = "Error: File size is too large.";
-          } else {
-            this.statusMessage = `Error: ${error.response.data || error.message}`;
-          }
-        } else {
-          this.statusMessage = "Error: Failed to upload file. Please try again.";
-          console.error("Error uploading file:", error);
-        }
+        this.statusMessage = "Error uploading file. Please try again.";
+        console.error("Error uploading file:", error);
       }
     },
   },
@@ -155,6 +139,35 @@ export default {
 </script>
 
 <style scoped>
+.tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.tag-chip {
+  background: linear-gradient(135deg, #8e44ad, #3498db);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 16px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+}
+.remove-tag {
+  margin-left: 8px;
+  cursor: pointer;
+  color: white;
+  font-weight: bold;
+}
+.remove-tag:hover {
+  color: #ff4d4d;
+}
+.hint {
+  font-size: 12px;
+  color: #888;
+}
+
 .document-upload-container {
   max-width: 600px;
   margin: 0 auto;
@@ -177,26 +190,12 @@ export default {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-left: 35px;
-  margin-top: 8px;
 }
 
-.error-message {
-  color: #ff4d4f;
-}
-
-.error-message i {
-  color: #ff4d4f;
-}
-
-.status-message {
-  color: #42b983;
-  font-size: 14px;
+.actions {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-left: 35px;
-  margin-top: 8px;
+  justify-content: center;
+  width: 100%;
 }
 
 h2 {
@@ -262,15 +261,9 @@ label {
 .upload-label i {
   margin-right: 10px;
 }
-  
-.actions {
-  margin: 0;
-  display: flex;
-  align-items: center;
-}
 
 button {
-  margin-top: 10px;
+  margin-top: 15px;
   padding: 6px 20px;
   border: 1px solid #ccc;
   color: white;
@@ -282,17 +275,42 @@ button {
 }
 
 .bottom-container {
-  position: absolute;
-  left: 10px;
-  bottom: 25px;
-  width: calc(100% - 50px);
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  gap: 20px;
+  align-items: center;
+  margin-top: 20px;
+  padding-top: 10px;
+  border-top: 1px solid #ccc;
+  white-space: nowrap;
 }
 
-button:hover {
+.status-message {
+  color: #42b983;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.error-message {
+  color: #ff4d4f;
+}
+
+.error-message i {
+  color: #ff4d4f;
+}
+
+.primary-button {
+  padding: 8px 16px;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.primary-button:hover {
   background-color: #2980b9;
 }
 

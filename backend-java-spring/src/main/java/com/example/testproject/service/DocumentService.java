@@ -58,16 +58,7 @@ public class DocumentService {
 
             document.setTags(tagSet);
         }
-//            Set<Tag> tagSet = new HashSet<>();
-//            for (String tagName : tags) {
-//                Tag tag = tagRepository.findByName(tagName)
-//                        .orElseGet(() -> tagRepository.save(new Tag(tagName)));
-//                tagSet.add(tag);
-//            }
-//            document.setTags(tagSet);
-
-
-
+        
         return documentRepository.save(document);
     }
 
