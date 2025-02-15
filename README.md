@@ -1,4 +1,7 @@
 # testproj
+![](https://i.ibb.co/1Y8HdjDv/testproj-1.jpg)
+![](https://i.ibb.co/4wVqfTkb/testproj-3.jpg)
+![](https://i.ibb.co/NDfDb6F/testproj-2.jpg)
 
 ## Описание
 Проект представляет собой систему управления документами с использованием **Java Spring Boot** на **backend**, **Vue.js** на **frontend**, а также **PostgreSQL** в качестве базы данных.
