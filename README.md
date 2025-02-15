@@ -34,7 +34,7 @@
 1. Скачать файл `db-testproj.sql` из репозитория ([GitHub](https://github.com/zhoracementov/testproj)).
 2. Импортировать базу данных в **PostgreSQL** с помощью **pgAdmin 4** или консоли:
    ```sh
-   psql -U postges -d postgres -f db-testproj.sql
+   psql -U postgres -d postgres -f db-testproj.sql
    ```
 
 ### 2. Клонирование репозитория
